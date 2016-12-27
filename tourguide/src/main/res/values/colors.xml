@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">@android:color/holo_blue_light</color>
+    <color name="colorPrimaryDark">@android:color/holo_blue_dark</color>
+    <color name="colorAccent">@android:color/holo_red_light</color>
+    <color name="tan_background">#FFF7DA</color>
+    <color name="category_dongjing">#FD8E09</color>
+    <color name="category_nanjing">#379237</color>
+    <color name="category_shanghai">#8800A0</color>
+    <color name="category_beijing">#CCAFCA</color>
+</resources>
