@@ -1,1 +1,1 @@
-include ':ReportCard', ':tourguide'
+include ':ReportCard', ':tourguide', ':booklisting'

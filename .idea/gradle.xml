@@ -10,6 +10,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/ReportCard" />
+            <option value="$PROJECT_DIR$/booklisting" />
             <option value="$PROJECT_DIR$/tourguide" />
           </set>
         </option>
