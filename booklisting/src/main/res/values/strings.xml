@@ -2,5 +2,10 @@
     <string name="app_name">Book Listing</string>
     <string name="et_input">请输入关键字</string>
     <string name="result_title">Result for</string>
-    <string name="tv_authors_null">未查询到作者</string>
+    <string name="tv_authors_null">Unkonwn Authors</string>
+    <string name="tv_publisher_null">Unkonwn publisher</string>
+    <string name="tv_publishedDate_null">Unkonwn publishDate</string>
+    <string name="tv_description_null">Unkonwn description</string>
+    <string name="exception_json">JSON异常</string>
+    <string name="exception">没有找到图片</string>
 </resources>

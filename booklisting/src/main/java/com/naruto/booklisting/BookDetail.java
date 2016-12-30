@@ -7,27 +7,22 @@ package com.naruto.booklisting;
  * Desc: UdaLearn
  */
 
-import android.graphics.Bitmap;
-
 public class BookDetail {
 
-	private String mTitle;
-	private String mAuthors;
-	private String mThumbnail;
-	private Bitmap mBitmap;
+	private final String mTitle;
+	private final String mAuthors;
+	private final String mPublisher;
+	private final String mPublishedDate;
+	private final String mDescription;
+	private final String mSmallThumbnail;
 
-	public BookDetail(String title, String authors, String thumbnail) {
+	public BookDetail(String title, String authorsStr, String publisher, String publishedDate, String description, String smallThumbnail) {
 		mTitle = title;
-		mAuthors = authors;
-		mThumbnail = thumbnail;
-	}
-
-	public void setBitmap(Bitmap bitmap) {
-		mBitmap = bitmap;
-	}
-
-	public Bitmap getBitmap() {
-		return mBitmap;
+		mAuthors = authorsStr;
+		mPublisher = publisher;
+		mPublishedDate = publishedDate;
+		mDescription = description;
+		mSmallThumbnail = smallThumbnail;
 	}
 
 	public String getTitle() {
@@ -38,8 +33,19 @@ public class BookDetail {
 		return mAuthors;
 	}
 
-	public String getThumbnail() {
-		return mThumbnail;
+	public String getPublisher() {
+		return mPublisher;
 	}
 
+	public String getPublishedDate() {
+		return mPublishedDate;
+	}
+
+	public String getDescription() {
+		return mDescription;
+	}
+
+	public String getSmallThumbnail() {
+		return mSmallThumbnail;
+	}
 }

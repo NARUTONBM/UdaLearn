@@ -1,6 +1,7 @@
 package com.naruto.booklisting;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 	private ConnectivityManager mConnectivityManager;
 	private ArrayList<BookDetail> mBookDetails;
 	private static int clickTime = 0;
+	private BookDetailAdapter mAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	private class GoogleBooksApiRequestTask extends AsyncTask<String, Integer, JSONObject> {
+	private class GoogleBooksApiRequestTask extends AsyncTask<String, Integer, JSONObject> implements AdapterView.OnItemClickListener {
 		/**
 		 * onPreExecute方法用于在执行后台任务前做一些UI操作
 		 */
@@ -189,15 +192,21 @@ public class MainActivity extends AppCompatActivity {
 		protected void onPostExecute(JSONObject result) {
 			clickTime --;
 			try {
+				// 获取items
 				JSONArray items = result.getJSONArray("items");
+				// 遍历item
 				for (int i = 0; i < items.length(); i ++) {
+					// 获取当前条目
 					JSONObject itemDetails = (JSONObject) items.get(i);
+					// 获取当前条目中的volumeInfo
 					JSONObject volumeInfo = itemDetails.getJSONObject("volumeInfo");
-					System.out.println("volumeInfo-------" + volumeInfo);
+					// 获取当前条目的书籍标题
 					String title = volumeInfo.getString("title");
-					System.out.println("title-------" + title);
-					String authorsStr = "";
+					// 获取当前书籍的作者们
+					String authorsStr;
+					// 非空判断
 					if (!volumeInfo.isNull("authors")) {
+						// 不为空，遍历每一个作者
 						JSONArray authors = volumeInfo.getJSONArray("authors");
 						StringBuilder builder = new StringBuilder();
 						for (int j = 0; j < authors.length(); j ++) {
@@ -206,24 +215,71 @@ public class MainActivity extends AppCompatActivity {
 								builder.append(" , ");
 							}
 						}
+						// 拼接所有作者
 						authorsStr = builder.toString();
 					} else {
+						// 为空，没有查询到作者
 						authorsStr = getString(R.string.tv_authors_null);
 					}
+					// 获取当前条目的出版社
+					String publisher;
+					if (!volumeInfo.isNull("publisher")) {
+						// 不为空，获取出版社
+						publisher = volumeInfo.getString("publisher");
+					} else {
+						// 为空，没有查询到出版社
+						publisher = getString(R.string.tv_publisher_null);
+					}
+					// 获取当前条目的出版时间
+					String publishedDate;
+					if (!volumeInfo.isNull("publishedDate")) {
+						// 不为空,获取当前条目的出版时间
+						publishedDate = volumeInfo.getString("publishedDate");
+					} else {
+						// 为空，未查询到出版时间
+						publishedDate = getString(R.string.tv_publishedDate_null);
+					}
+					// 获取当前条目的简介
+					String description;
+					if (!volumeInfo.isNull("description")) {
+						// 不为空,获取当前条目的简介
+						description = volumeInfo.getString("description");
+					} else {
+						// 为空，未查询到简介
+						description = getString(R.string.tv_description_null);
+					}
+					// 获取当前条目的图片的url地址
 					JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
 					String smallThumbnail = imageLinks.getString("smallThumbnail");
-					mBookDetails.add(new BookDetail(title, authorsStr, smallThumbnail));
+					// 添加一条bookdetail
+					mBookDetails.add(new BookDetail(title, authorsStr, publisher, publishedDate, description, smallThumbnail));
 				}
 			} catch (JSONException e) {
-				Log.d(getClass().getName(), "JSON异常");
+				Log.d(getClass().getName(), getString(R.string.exception_json));
 				e.printStackTrace();
 			} catch (Exception e) {
-				Log.d(getClass().getName(), "没有找到图片");
+				Log.d(getClass().getName(), getString(R.string.exception));
 				e.printStackTrace();
 			}
+			// 创建适配器
+			mAdapter = new BookDetailAdapter(mContext, mBookDetails, 0);
+			// 给listview设置适配器
+			lv_results.setAdapter(mAdapter);
+			// 给listview设置点击事件
+			lv_results.setOnItemClickListener(this);
+		}
 
-			BookDetailAdapter adapter = new BookDetailAdapter(mContext, mBookDetails, 0);
-			lv_results.setAdapter(adapter);
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			Intent intent = new Intent(mContext, BookDetailsActivity.class);
+			BookDetail bookDetail = mBookDetails.get(position);
+			intent.putExtra("smallThumbnail", bookDetail.getSmallThumbnail());
+			intent.putExtra("title", bookDetail.getTitle());
+			intent.putExtra("authors", bookDetail.getAuthors());
+			intent.putExtra("publisher", bookDetail.getPublisher());
+			intent.putExtra("publishDate", bookDetail.getPublishedDate());
+			intent.putExtra("description", bookDetail.getDescription());
+			startActivity(intent);
 		}
 	}
 
@@ -240,5 +296,13 @@ public class MainActivity extends AppCompatActivity {
 		NetworkInfo networkInfo = mConnectivityManager.getActiveNetworkInfo();
 
 		return networkInfo != null && networkInfo.isConnected();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (clickTime != 0) {
+			clickTime --;
+		}
 	}
 }
