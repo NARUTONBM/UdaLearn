@@ -249,8 +249,14 @@ public class MainActivity extends AppCompatActivity {
 						description = getString(R.string.tv_description_null);
 					}
 					// 获取当前条目的图片的url地址
-					JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
-					String smallThumbnail = imageLinks.getString("smallThumbnail");
+					String smallThumbnail;
+					if (!volumeInfo.isNull("imageLinks")) {
+						// 不为空，获取url地址
+						JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
+						smallThumbnail = imageLinks.getString("smallThumbnail");
+					} else {
+						smallThumbnail = "Unknown url";
+					}
 					// 添加一条bookdetail
 					mBookDetails.add(new BookDetail(title, authorsStr, publisher, publishedDate, description, smallThumbnail));
 				}

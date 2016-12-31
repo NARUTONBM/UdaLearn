@@ -15,11 +15,10 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,7 +33,6 @@ import java.net.URL;
 
 public class BookDetailsActivity extends AppCompatActivity {
 
-	private Context mContext;
 	private String mTitle;
 	private String mSmallThumbnail;
 	private String mAuthors;
@@ -44,36 +42,22 @@ public class BookDetailsActivity extends AppCompatActivity {
 	private ConnectivityManager mConnectivityManager;
 	private ImageView iv_book_detail_image;
 
-	private Handler mHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			// 轮询消息
-			switch (msg.what) {
-			case 0:
-				// 获取消息中的内容
-				Bitmap bitmap = (Bitmap) msg.obj;
-				iv_book_detail_image.setImageBitmap(bitmap);
-				break;
-
-			default:
-				break;
-			}
-		}
-	};
-
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_bookdetails);
 
-		mContext = this;
 		// 初始化数据
 		initData();
 		// 初始化UI
 		initUI();
 	}
 
+	/**
+	 * 初始化数据
+	 */
 	private void initData() {
+		// 获取从mainactivity传递过来的数据
 		mTitle = getIntent().getStringExtra("title");
 		mSmallThumbnail = getIntent().getStringExtra("smallThumbnail");
 		mAuthors = getIntent().getStringExtra("authors");
@@ -82,8 +66,14 @@ public class BookDetailsActivity extends AppCompatActivity {
 		mDescription = getIntent().getStringExtra("description");
 	}
 
+	/**
+	 * 初始化UI
+	 */
 	private void initUI() {
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		// 设置标题
 		getSupportActionBar().setTitle("Details of " + mTitle);
+		// 找到控件，并设置相应的内容
 		iv_book_detail_image = (ImageView) findViewById(R.id.iv_book_detail_image);
 		TextView tv_book_detail_title = (TextView) findViewById(R.id.tv_book_detail_title);
 		tv_book_detail_title.setText(mTitle);
@@ -92,41 +82,28 @@ public class BookDetailsActivity extends AppCompatActivity {
 		TextView tv_book_detail_publish = (TextView) findViewById(R.id.tv_book_detail_publish);
 		tv_book_detail_publish.setText(String.format("Published by %s in %s", mPublisher, mPublishDate));
 		TextView tv_book_detail_description = (TextView) findViewById(R.id.tv_book_detail_description);
-		if (mDescription.equals("Unkonwn description")) {
+		// 对描述非空判断
+		if (mDescription.equals("Unknown description")) {
+			// 为空则居中显示
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
 				tv_book_detail_description.setGravity(View.TEXT_ALIGNMENT_GRAVITY);
 			}
 		}
 		tv_book_detail_description.setText(String.format("  %s", mDescription));
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				Bitmap bmp = null;
-				try {
-					URL url = new URL(mSmallThumbnail);
-					// 获得连接
-					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-					conn.setConnectTimeout(6000);// 设置超时
-					conn.setDoInput(true);
-					conn.setUseCaches(false);// 不缓存
-					conn.connect();
-					InputStream is = conn.getInputStream();// 获得图片的数据流
-					bmp = BitmapFactory.decodeStream(is);
-					// 通过消息机制将图片传递给主线程
-					Message msg = new Message();
-					msg.what = 0;
-					msg.obj = bmp;
-					mHandler.sendMessage(msg);
-					// 关闭流，关闭连接
-					is.close();
-					conn.disconnect();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}).start();
+		// 对图片url地址做非空判断
+		if (mSmallThumbnail.equals("Unknown url")) {
+			// 为空则显示固定图片
+			iv_book_detail_image.setImageResource(R.mipmap.image_fail);
+		} else {
+			// 不为空，则加载网络图片
+			ImageRequestTask imageRequestTask = new ImageRequestTask();
+			imageRequestTask.execute(mSmallThumbnail);
+		}
 	}
 
+	/**
+	 * 异步加载网络图片任务
+	 */
 	private class ImageRequestTask extends AsyncTask<String, Integer, Bitmap> {
 		/**
 		 * onPreExecute方法用于在执行后台任务前做一些UI操作
@@ -150,11 +127,12 @@ public class BookDetailsActivity extends AppCompatActivity {
 		 */
 		@Override
 		protected Bitmap doInBackground(String... params) {
+			String urlStr = params[0].replace("http", "https");
 			try {
 				HttpURLConnection connection = null;
 				// 建立连接
 				try {
-					URL url = new URL(params[0]);
+					URL url = new URL(urlStr);
 					connection = (HttpURLConnection) url.openConnection();
 					connection.setRequestMethod("GET");
 					connection.setConnectTimeout(5000);
@@ -216,5 +194,14 @@ public class BookDetailsActivity extends AppCompatActivity {
 		NetworkInfo networkInfo = mConnectivityManager.getActiveNetworkInfo();
 
 		return networkInfo != null && networkInfo.isConnected();
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == android.R.id.home) {
+			onBackPressed();
+		}
+
+		return super.onOptionsItemSelected(item);
 	}
 }
