@@ -15,6 +15,8 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -41,6 +43,23 @@ public class BookDetailsActivity extends AppCompatActivity {
 	private String mDescription;
 	private ConnectivityManager mConnectivityManager;
 	private ImageView iv_book_detail_image;
+
+	private Handler mHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			// 轮询消息
+			switch (msg.what) {
+			case 0:
+				// 获取消息中的内容
+				Bitmap bitmap = (Bitmap) msg.obj;
+				iv_book_detail_image.setImageBitmap(bitmap);
+				break;
+
+			default:
+				break;
+			}
+		}
+	};
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,8 +98,33 @@ public class BookDetailsActivity extends AppCompatActivity {
 			}
 		}
 		tv_book_detail_description.setText(String.format("  %s", mDescription));
-		ImageRequestTask imageRequestTask = new ImageRequestTask();
-		imageRequestTask.execute(mSmallThumbnail);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				Bitmap bmp = null;
+				try {
+					URL url = new URL(mSmallThumbnail);
+					// 获得连接
+					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+					conn.setConnectTimeout(6000);// 设置超时
+					conn.setDoInput(true);
+					conn.setUseCaches(false);// 不缓存
+					conn.connect();
+					InputStream is = conn.getInputStream();// 获得图片的数据流
+					bmp = BitmapFactory.decodeStream(is);
+					// 通过消息机制将图片传递给主线程
+					Message msg = new Message();
+					msg.what = 0;
+					msg.obj = bmp;
+					mHandler.sendMessage(msg);
+					// 关闭流，关闭连接
+					is.close();
+					conn.disconnect();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
 	}
 
 	private class ImageRequestTask extends AsyncTask<String, Integer, Bitmap> {
