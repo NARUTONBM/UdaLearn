@@ -12,9 +12,10 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:titleTextAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+            android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
+            android:titleTextAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+            app:layout_scrollFlags="scroll|enterAlways"
             app:titleTextColor="@android:color/white"/>
 
         <android.support.design.widget.TabLayout

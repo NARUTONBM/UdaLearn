@@ -1,12 +1,10 @@
 package com.naruto.tourguide.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,8 +14,6 @@ import com.naruto.tourguide.bean.Info;
 
 import java.util.ArrayList;
 
-import static com.naruto.tourguide.R.id.ll_text_container;
-
 /*
  * Created with Android Studio.
  * User: narutonbm@gmail.com
@@ -26,53 +22,53 @@ import static com.naruto.tourguide.R.id.ll_text_container;
  * Desc: UdaLearn
  */
 
-public class InfoAdapter extends ArrayAdapter<Info> {
+public class InfoAdapter extends RecyclerView.Adapter<InfoAdapter.InfoViewHolder> {
 
 	private int mColorResourceId;
+	private ArrayList<Info> mInfos;
+	private Context mContext;
 
 	public InfoAdapter(Context context, ArrayList<Info> infos, int colorResourceId) {
-		super(context, 0, infos);
+		mContext = context;
+		mInfos = infos;
 		mColorResourceId = colorResourceId;
 	}
 
-	@NonNull
 	@Override
-	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-		ViewHolder holder;
-		if (convertView == null) {
-			convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_info, parent, false);
-			// 创建viewholder对象
-			holder = new ViewHolder();
-			// 找到控件
-			holder.iv_picture = (ImageView) convertView.findViewById(R.id.iv_picture);
-			holder.tv_title = (TextView) convertView.findViewById(R.id.tv_title);
-			holder.tv_position = (TextView) convertView.findViewById(R.id.tv_position);
-			holder.ll_text_container = (LinearLayout) convertView.findViewById(ll_text_container);
-			convertView.setTag(holder);
-		} else {
-			holder = (ViewHolder) convertView.getTag();
-		}
-		// 获当前条目的相关内容
-		Info currentInfo = getItem(position);
-		// 对对条目内容进行非空判断
-		if (currentInfo != null) {
-			// 给imageView设置图片
-			holder.iv_picture.setImageResource(currentInfo.getImageResourceId());
-			// 给title设置标题
-			holder.tv_title.setText(currentInfo.getTitleId());
-			// 给position设置地点
-			holder.tv_position.setText(currentInfo.getPositionId());
-			// 给条目设置背景色
-			holder.ll_text_container.setBackgroundColor(ContextCompat.getColor(getContext(), mColorResourceId));
-		}
-
-		return convertView;
+	public InfoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		// Inflate the view for this view holder
+		View view = LayoutInflater.from(mContext).inflate(R.layout.item_info, parent, false);
+		// Call the view holder's constructor, and pass the view to it;
+		// return that new view holder
+		return new InfoViewHolder(view);
 	}
 
-	private static class ViewHolder {
+	@Override
+	public void onBindViewHolder(InfoViewHolder holder, int position) {
+		Info info = mInfos.get(position);
+		holder.iv_picture.setImageResource(info.getImageResourceId());
+		holder.tv_title.setText(info.getTitleId());
+		holder.tv_position.setText(info.getPositionId());
+		holder.ll_text_container.setBackgroundColor(mColorResourceId);
+	}
+
+	@Override
+	public int getItemCount() {
+		return mInfos.size();
+	}
+
+	static class InfoViewHolder extends RecyclerView.ViewHolder {
 		ImageView iv_picture;
 		TextView tv_title;
 		TextView tv_position;
 		LinearLayout ll_text_container;
+
+		InfoViewHolder(View view) {
+			super(view);
+			iv_picture = (ImageView) view.findViewById(R.id.iv_picture);
+			tv_title = (TextView) view.findViewById(R.id.tv_title);
+			tv_position = (TextView) view.findViewById(R.id.tv_position);
+			ll_text_container = (LinearLayout) view.findViewById(R.id.ll_text_container);
+		}
 	}
 }

@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/ReportCard/ReportCard.iml" filepath="$PROJECT_DIR$/ReportCard/ReportCard.iml" />
       <module fileurl="file://$PROJECT_DIR$/UdaLearn.iml" filepath="$PROJECT_DIR$/UdaLearn.iml" />
       <module fileurl="file://$PROJECT_DIR$/booklisting/booklisting.iml" filepath="$PROJECT_DIR$/booklisting/booklisting.iml" />
+      <module fileurl="file://$PROJECT_DIR$/newsapp/newsapp.iml" filepath="$PROJECT_DIR$/newsapp/newsapp.iml" />
       <module fileurl="file://$PROJECT_DIR$/tourguide/tourguide.iml" filepath="$PROJECT_DIR$/tourguide/tourguide.iml" />
     </modules>
   </component>

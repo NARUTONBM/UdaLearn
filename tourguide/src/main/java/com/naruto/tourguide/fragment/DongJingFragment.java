@@ -10,10 +10,11 @@ package com.naruto.tourguide.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.naruto.tourguide.R;
 import com.naruto.tourguide.adapter.InfoAdapter;
@@ -41,10 +42,20 @@ public class DongJingFragment extends Fragment {
 		dongJingInfos.add(new Info(R.mipmap.mount_fuji, R.string.fushishan, R.string.fushishan_position));
 		dongJingInfos.add(new Info(R.mipmap.gotemba_field, R.string.yudianchang, R.string.yudianchang_position));
 		dongJingInfos.add(new Info(R.mipmap.zdy_shopping, R.string.zhudiyu_shopping, R.string.zhudiyu_shopping_position));
+		dongJingInfos.add(new Info(R.mipmap.zdy_shopping, R.string.zhudiyu_shopping, R.string.zhudiyu_shopping_position));
+		dongJingInfos.add(new Info(R.mipmap.zdy_shopping, R.string.zhudiyu_shopping, R.string.zhudiyu_shopping_position));
+		dongJingInfos.add(new Info(R.mipmap.zdy_shopping, R.string.zhudiyu_shopping, R.string.zhudiyu_shopping_position));
+		dongJingInfos.add(new Info(R.mipmap.zdy_shopping, R.string.zhudiyu_shopping, R.string.zhudiyu_shopping_position));
+		dongJingInfos.add(new Info(R.mipmap.zdy_shopping, R.string.zhudiyu_shopping, R.string.zhudiyu_shopping_position));
+		dongJingInfos.add(new Info(R.mipmap.zdy_shopping, R.string.zhudiyu_shopping, R.string.zhudiyu_shopping_position));
+		dongJingInfos.add(new Info(R.mipmap.zdy_shopping, R.string.zhudiyu_shopping, R.string.zhudiyu_shopping_position));
+		dongJingInfos.add(new Info(R.mipmap.zdy_shopping, R.string.zhudiyu_shopping, R.string.zhudiyu_shopping_position));
+		dongJingInfos.add(new Info(R.mipmap.zdy_shopping, R.string.zhudiyu_shopping, R.string.zhudiyu_shopping_position));
 
 		InfoAdapter adapter = new InfoAdapter(getActivity(), dongJingInfos, R.color.category_dongjing);
-		ListView listView = (ListView) view.findViewById(R.id.lv_attractions_info);
-		listView.setAdapter(adapter);
+		RecyclerView rv_attractions_info = (RecyclerView) view.findViewById(R.id.rv_attractions_info);
+		rv_attractions_info.setLayoutManager(new LinearLayoutManager(getActivity()));
+		rv_attractions_info.setAdapter(adapter);
 
 		return view;
 	}

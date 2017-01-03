@@ -11,10 +11,11 @@ package com.naruto.tourguide.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.naruto.tourguide.R;
 import com.naruto.tourguide.adapter.InfoAdapter;
@@ -45,8 +46,9 @@ public class NanJingFragment extends Fragment {
 		nanJingInfos.add(new Info(R.mipmap.zsl, R.string.zhongshanling, R.string.zhongshanling_position));
 
 		InfoAdapter adapter = new InfoAdapter(getActivity(), nanJingInfos, R.color.category_nanjing);
-		ListView listView = (ListView) view.findViewById(R.id.lv_attractions_info);
-		listView.setAdapter(adapter);
+		RecyclerView rv_attractions_info = (RecyclerView) view.findViewById(R.id.rv_attractions_info);
+		rv_attractions_info.setLayoutManager(new LinearLayoutManager(getActivity()));
+		rv_attractions_info.setAdapter(adapter);
 
 		return view;
 	}
